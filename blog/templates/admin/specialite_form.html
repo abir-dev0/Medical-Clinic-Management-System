@@ -1,0 +1,38 @@
+{% extends 'base_admin.html' %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="max-w-2xl mx-auto" style="background-color: #F9FAFB;">
+  <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
+    <h2 class="text-2xl font-bold text-[#374151] mb-6 text-center">{{ title }}</h2>
+    
+    {% if form.non_field_errors %}
+      <div class="mb-4 p-3 bg-red-100 text-red-700 rounded text-center font-semibold">{{ form.non_field_errors|striptags }}</div>
+    {% endif %}
+
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-4">
+          <label for="{{ field.id_for_label }}" class="block text-[#374151] font-medium mb-1">{{ field.label }}</label>
+          {{ field|add_class:'w-full px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]' }}
+          {% if field.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ field.errors|striptags }}</p>
+          {% endif %}
+          {% if field.help_text %}
+            <p class="text-sm text-[#6B7280] mt-1">{{ field.help_text }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+      
+      <div class="flex space-x-4">
+        <button type="submit" class="flex-1 bg-[#2563EB] hover:bg-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow transition-all duration-200 transform hover:scale-105">
+          Valider
+        </button>
+        <a href="{% url 'specialite_list' %}" class="flex-1 bg-[#6B7280] hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-xl shadow transition-all duration-200 transform hover:scale-105 text-center">
+          Annuler
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %} 

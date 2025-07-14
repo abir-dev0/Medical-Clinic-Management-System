@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Espace Patient - Cabinet Médical{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-[#F9FAFB] min-h-screen">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-xl flex flex-col py-8 px-4 border-r border-[#E5E7EB]">
+            <div class="mb-10 text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-[#2563EB] rounded-2xl mb-4 shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-[#2563EB]">Espace Patient</h2>
+            </div>
+            <nav class="flex-1">
+                <ul class="space-y-3">
+                    <li>
+                        <a href="/patient/rendezvous/" class="flex items-center px-4 py-3 rounded-xl text-[#374151] hover:bg-[#b8d2e4] hover:text-[#2563EB] font-medium transition-all duration-200 group">
+                            <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Mes rendez-vous
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/patient/prendre-rendezvous/" class="flex items-center px-4 py-3 rounded-xl text-[#374151] hover:bg-[#b8d2e4] hover:text-[#2563EB] font-medium transition-all duration-200 group">
+                            <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Prendre RDV
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/patient/dossier/" class="flex items-center px-4 py-3 rounded-xl text-[#374151] hover:bg-[#b8d2e4] hover:text-[#2563EB] font-medium transition-all duration-200 group">
+                            <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Mon dossier
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="pt-6 border-t border-[#E5E7EB]">
+                <a href="/logout/" class="flex items-center px-4 py-3 rounded-xl text-[#374151] hover:bg-red-100 hover:text-red-600 font-medium transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" />
+                    </svg>
+                    Déconnexion
+                </a>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+            <header class="bg-white/80 backdrop-blur-sm shadow-sm border-b border-[#E5E7EB] p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-[#2563EB]">Cabinet Médical</h1>
+                        <p class="text-[#6B7280] mt-1">Bienvenue dans votre espace personnel</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right">
+                            <p class="text-sm text-[#6B7280]">Connecté en tant que</p>
+                            <p class="font-semibold text-[#374151]">
+                                {% if user.patient %}
+                                    {{ user.patient.prenom }}
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="w-10 h-10 bg-[#2563EB] rounded-full flex items-center justify-center">
+                            <span class="text-white font-semibold text-sm">
+                                {% if user.patient %}
+                                    {{ user.patient.nom|first }}{{ user.patient.prenom|first }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <main class="flex-1 p-8">
+                <div class="max-w-6xl mx-auto">
+                    {% block content %}{% endblock %}
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html> 

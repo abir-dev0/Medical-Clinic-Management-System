@@ -1,0 +1,12 @@
+{% extends 'base_admin.html' %}
+{% block content %}
+  <div class="max-w-lg mx-auto bg-white rounded-2xl shadow-lg p-10 border border-blue-100 mt-16 text-center">
+    <h2 class="text-2xl font-bold text-red-700 mb-6">Supprimer le médecin</h2>
+    <p class="mb-6">Êtes-vous sûr de vouloir supprimer le médecin <span class="font-semibold">Dr. {{ medecin.user.get_full_name }}</span> ? Cette action est irréversible.</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="px-6 py-2 bg-red-100 text-red-700 hover:bg-red-200 hover:text-red-900 font-semibold rounded-lg shadow transition">Confirmer la suppression</button>
+      <a href="{% url 'medecin_list' %}" class="ml-4 text-gray-600 hover:underline">Annuler</a>
+    </form>
+  </div>
+{% endblock %} 

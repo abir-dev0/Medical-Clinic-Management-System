@@ -1,0 +1,110 @@
+{% extends 'base_medecin.html' %}
+
+{% block title %}Créer un compte rendu - Dr. {{ medecin.nom }} {{ medecin.prenom }}{% endblock %}
+
+{% block content %}
+<div class="space-y-8" style="background-color: #F9FAFB;">
+    <!-- En-tête -->
+    <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-[#374151]">Créer un compte rendu</h1>
+                <p class="text-[#6B7280] mt-2">Rendez-vous du {{ rendezvous.date_heure|date:"d/m/Y à H:i" }}</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-[#6B7280]">Patient</p>
+                <p class="text-lg font-semibold text-[#2563EB]">{{ rendezvous.patient.nom }} {{ rendezvous.patient.prenom }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations du rendez-vous -->
+    <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
+        <h2 class="text-xl font-semibold text-[#374151] mb-4">Informations du rendez-vous</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <p class="text-sm font-medium text-[#6B7280]">Date et heure</p>
+                <p class="text-[#374151]">{{ rendezvous.date_heure|date:"d/m/Y à H:i" }}</p>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-[#6B7280]">Motif</p>
+                <p class="text-[#374151]">{{ rendezvous.motif }}</p>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-[#6B7280]">Patient</p>
+                <p class="text-[#374151]">{{ rendezvous.patient.nom }} {{ rendezvous.patient.prenom }}</p>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-[#6B7280]">Téléphone</p>
+                <p class="text-[#374151]">{{ rendezvous.patient.telephone }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulaire de création du compte rendu -->
+    <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
+        <h2 class="text-xl font-semibold text-[#374151] mb-6">Compte rendu de consultation</h2>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div>
+                <label for="contenu" class="block text-sm font-medium text-[#374151] mb-2">
+                    Compte rendu détaillé <span class="text-[#EF4444]">*</span>
+                </label>
+                <textarea 
+                    id="contenu" 
+                    name="contenu" 
+                    rows="8" 
+                    required
+                    placeholder="Décrivez en détail la consultation, les observations, les examens effectués..."
+                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB] resize-none"
+                ></textarea>
+                <p class="text-sm text-[#6B7280] mt-1">Décrivez la consultation, les symptômes observés, les examens effectués, etc.</p>
+            </div>
+
+            <div>
+                <label for="diagnostic" class="block text-sm font-medium text-[#374151] mb-2">
+                    Diagnostic <span class="text-[#EF4444]">*</span>
+                </label>
+                <textarea 
+                    id="diagnostic" 
+                    name="diagnostic" 
+                    rows="4" 
+                    required
+                    placeholder="Diagnostic établi, conclusions..."
+                    class="w-full px-4 py-3 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB] resize-none"
+                ></textarea>
+                <p class="text-sm text-[#6B7280] mt-1">Diagnostic établi, conclusions de la consultation.</p>
+            </div>
+
+            <div class="flex justify-end space-x-4 pt-6">
+                <a href="{% url 'medecin_rendezvous' %}" 
+                   class="px-6 py-2 border border-[#E5E7EB] text-[#6B7280] rounded-lg hover:bg-[#E5E7EB] transition-colors">
+                    Annuler
+                </a>
+                <button type="submit" 
+                        class="px-6 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#3B82F6] transition-colors">
+                    Créer le compte rendu
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const contenuField = document.getElementById('contenu');
+    const diagnosticField = document.getElementById('diagnostic');
+
+    form.addEventListener('submit', function(e) {
+        if (!contenuField.value.trim() || !diagnosticField.value.trim()) {
+            e.preventDefault();
+            alert('Veuillez remplir tous les champs obligatoires.');
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %} 

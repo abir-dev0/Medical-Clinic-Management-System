@@ -1,0 +1,12 @@
+{% extends 'base_medecin.html' %}
+{% block content %}
+  <div class="max-w-lg mx-auto bg-white rounded-2xl shadow-lg p-10 border border-[#E5E7EB] mt-16 text-center" style="background-color: #F9FAFB;">
+    <h2 class="text-2xl font-bold text-[#EF4444] mb-6">Supprimer le créneau</h2>
+    <p class="mb-6 text-[#374151]">Êtes-vous sûr de vouloir supprimer le créneau du <span class="font-semibold">{{ creneau.get_jour_display }}</span> de {{ creneau.heure_debut|time:"H:i" }} à {{ creneau.heure_fin|time:"H:i" }} ? Cette action est irréversible.</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="bg-[#EF4444] hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">Confirmer la suppression</button>
+      <a href="{% url 'medecin_creneaux' %}" class="ml-4 text-[#6B7280] hover:underline">Annuler</a>
+    </form>
+  </div>
+{% endblock %} 

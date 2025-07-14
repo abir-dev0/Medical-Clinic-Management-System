@@ -1,0 +1,26 @@
+{% extends 'base_medecin.html' %}
+
+{% block content %}
+  <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-10 border border-[#E5E7EB]" style="background-color: #F9FAFB;">
+    <h2 class="text-2xl font-bold text-[#2563EB] mb-6 text-center">Dossier médical de {{ patient.nom }} {{ patient.prenom }}</h2>
+    {% if dossier %}
+      <div class="mb-4">
+        <span class="block text-[#374151] font-medium mb-1">Observations :</span>
+        <p class="text-[#374151] bg-[#F9FAFB] rounded p-4">{{ dossier.observations }}</p>
+      </div>
+      {% if dossier.fichiers %}
+        <div class="mb-4">
+          <span class="block text-[#374151] font-medium mb-1">Fichier :</span>
+          <a href="{{ dossier.fichiers.url }}" class="text-[#2563EB] hover:underline" download>Télécharger le dossier médical</a>
+        </div>
+      {% else %}
+        <div class="mb-4 text-[#6B7280]">Aucun fichier médical disponible.</div>
+      {% endif %}
+    {% else %}
+      <div class="text-center text-[#6B7280]">Aucun dossier médical trouvé pour ce patient.</div>
+    {% endif %}
+    <div class="mt-6 text-center">
+      <a href="{% url 'medecin_rendezvous' %}" class="text-[#2563EB] hover:underline">Retour aux rendez-vous</a>
+    </div>
+  </div>
+{% endblock %} 

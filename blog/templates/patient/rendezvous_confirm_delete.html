@@ -1,0 +1,73 @@
+{% extends 'base_patient.html' %}
+
+{% block content %}
+<div class="max-w-lg mx-auto" style="background-color: #F9FAFB;">
+  <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8 card-hover">
+    <div class="text-center mb-8">
+      <div class="w-20 h-20 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      </div>
+      <h2 class="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent mb-2">Supprimer mon rendez-vous</h2>
+      <p class="text-[#6B7280]">Cette action est irréversible</p>
+    </div>
+    
+    <div class="bg-red-50 border border-red-200 rounded-xl p-6 mb-8">
+      <div class="flex items-start space-x-4">
+        <div class="flex-shrink-0">
+          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-red-900 mb-2">Détails du rendez-vous</h3>
+          <div class="space-y-2 text-red-800">
+            <div class="flex items-center">
+              <span class="font-medium w-20">Date :</span>
+              <span>{{ rendezvous.date_heure|date:'d/m/Y' }}</span>
+            </div>
+            <div class="flex items-center">
+              <span class="font-medium w-20">Heure :</span>
+              <span>{{ rendezvous.date_heure|date:'H:i' }}</span>
+            </div>
+            <div class="flex items-center">
+              <span class="font-medium w-20">Médecin :</span>
+              <span>Dr. {{ rendezvous.medecin.user.get_full_name }}</span>
+            </div>
+            <div class="flex items-center">
+              <span class="font-medium w-20">Motif :</span>
+              <span>{{ rendezvous.motif }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center mb-6">
+      <p class="text-[#374151] font-medium">Êtes-vous sûr de vouloir supprimer ce rendez-vous ?</p>
+      <p class="text-sm text-[#6B7280] mt-1">Cette action ne peut pas être annulée.</p>
+    </div>
+    
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+        <div class="flex items-center justify-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          Oui, supprimer le rendez-vous
+        </div>
+      </button>
+      <a href="{% url 'patient_rendezvous' %}" class="block w-full bg-[#F9FAFB] hover:bg-[#E5E7EB] text-[#374151] font-semibold py-3 px-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-center border border-[#E5E7EB]">
+        <div class="flex items-center justify-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Annuler
+        </div>
+      </a>
+    </form>
+  </div>
+</div>
+{% endblock %} 

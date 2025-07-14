@@ -1,0 +1,91 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<div class="space-y-8" style="background-color: #F9FAFB;">
+  <!-- En-tête -->
+  <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-3xl font-bold text-[#374151] mb-2">Tous les dossiers médicaux</h2>
+        <p class="text-[#6B7280] text-lg">Gérez tous les dossiers médicaux des patients</p>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="bg-[#2563EB] text-white px-4 py-2 rounded-xl font-semibold">
+          {{ dossiers.count }} dossier{{ dossiers.count|pluralize }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des dossiers -->
+  <div class="grid gap-6">
+    {% for dossier in dossiers %}
+      <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-6">
+            <div class="flex-shrink-0">
+              <div class="w-16 h-16 bg-[#2563EB] rounded-2xl flex items-center justify-center">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-6 4h6a2 2 0 002-2v-5a2 2 0 00-2-2h-2a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2v2" />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-[#374151] mb-1">{{ dossier.patient.user.get_full_name }}</h3>
+              <div class="flex items-center space-x-6 text-[#6B7280]">
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span class="font-medium">{{ dossier.observations|truncatechars:80|default:"Aucune observation" }}</span>
+                </div>
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span class="font-medium">{{ dossier.date_creation|date:"d/m/Y" }}</span>
+                </div>
+                <div class="flex items-center">
+                  {% if dossier.fichiers %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#10B981] text-white">Fichier disponible</span>
+                  {% else %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#6B7280] text-white">Aucun fichier</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="flex space-x-2">
+              {% if dossier.fichiers %}
+                <a href="{{ dossier.fichiers.url }}" class="inline-flex items-center px-4 py-2 bg-[#2563EB] hover:bg-[#3B82F6] text-white text-sm font-semibold rounded-lg shadow-sm transition" download>
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Télécharger
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-12 text-center">
+        <div class="w-24 h-24 bg-[#2563EB] rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-6 4h6a2 2 0 002-2v-5a2 2 0 00-2-2h-2a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2v2" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-[#374151] mb-2">Aucun dossier médical</h3>
+        <p class="text-[#6B7280] mb-6">Aucun dossier médical n'est enregistré dans le système.</p>
+        <button class="inline-flex items-center px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-xl shadow-lg cursor-not-allowed opacity-60" disabled>
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Créer le premier dossier
+        </button>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %} 

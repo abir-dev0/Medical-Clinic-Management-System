@@ -1,0 +1,142 @@
+{% extends 'base_patient.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto" style="background-color: #F9FAFB;">
+  <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
+    <h2 class="text-2xl font-bold text-[#374151] mb-6 text-center">Prendre un rendez-vous</h2>
+    
+    {% if error %}
+      <div class="mb-4 p-3 bg-red-100 text-red-700 rounded text-center font-semibold">{{ error }}</div>
+    {% endif %}
+
+    {% if info_message %}
+      <div class="mb-4 p-3 bg-blue-100 text-blue-700 rounded text-center font-semibold">{{ info_message }}</div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" id="rendezvousForm">
+      {% csrf_token %}
+      
+      <div class="mb-4">
+        <label for="medecin" class="block text-[#374151] font-medium mb-1">Médecin</label>
+        <select name="medecin" id="medecin" required class="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]" onchange="this.form.submit()">
+          <option value="">Choisissez un médecin</option>
+          {% for medecin in medecins %}
+            <option value="{{ medecin.id }}" {% if selected_medecin and medecin.id == selected_medecin.id %}selected{% endif %}>Dr. {{ medecin.nom }} {{ medecin.prenom }} - {{ medecin.specialite.nom }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      {% if selected_medecin %}
+      <div class="mb-4">
+        <label for="date_rdv" class="block text-[#374151] font-medium mb-1">Date souhaitée</label>
+        <input type="date" name="date_rdv" id="date_rdv" required 
+               min="{{ min_date }}" 
+               value="{{ selected_date }}"
+               class="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+               onchange="validateDateAndSubmit()">
+        <p class="text-sm text-[#6B7280] mt-1">Choisissez la date de votre rendez-vous (minimum aujourd'hui)</p>
+        <div id="dateError" class="text-red-600 text-sm mt-1 hidden"></div>
+      </div>
+      {% endif %}
+
+      {% if selected_medecin and selected_date %}
+      <div class="mb-4">
+        <label for="heure_rdv" class="block text-[#374151] font-medium mb-1">Heure disponible</label>
+        <select name="heure_rdv" id="heure_rdv" required class="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]">
+          <option value="">Choisissez une heure</option>
+          {% for heure in heures_disponibles %}
+            <option value="{{ heure }}" {% if selected_heure == heure %}selected{% endif %}>{{ heure }}</option>
+          {% endfor %}
+        </select>
+        <p class="text-sm text-[#6B7280] mt-1">Heures disponibles pour le {{ selected_date|date:"d/m/Y" }}</p>
+        {% if not heures_disponibles and not info_message %}
+          <div class="p-3 bg-[#F9FAFB] text-[#6B7280] rounded text-center">
+            Aucune heure disponible pour cette date
+          </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <div class="mb-4">
+        <label for="motif" class="block text-[#374151] font-medium mb-1">Motif</label>
+        <textarea name="motif" id="motif" rows="3" class="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]" placeholder="Décrivez le motif de votre consultation"></textarea>
+      </div>
+
+      <div class="mb-4">
+        <label for="observations" class="block text-[#374151] font-medium mb-1">Observations médicales</label>
+        <textarea name="observations" id="observations" rows="3" class="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]" placeholder="Observations médicales (optionnel)"></textarea>
+      </div>
+
+      <div class="mb-6">
+        <label for="fichier" class="block text-[#374151] font-medium mb-1">Fichier médical (optionnel)</label>
+        <input type="file" name="fichier" id="fichier" class="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]">
+      </div>
+
+      <button type="submit" name="valider" id="submitBtn" class="w-full bg-[#2563EB] hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg shadow transition" {% if not heures_disponibles %}disabled{% endif %}>Valider le rendez-vous</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function validateDate() {
+    const dateInput = document.getElementById('date_rdv');
+    const dateError = document.getElementById('dateError');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (dateInput.value) {
+        const selectedDate = new Date(dateInput.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Réinitialiser l'heure à 00:00:00
+        
+        if (selectedDate < today) {
+            dateError.textContent = "Impossible de prendre un rendez-vous pour une date antérieure à aujourd'hui.";
+            dateError.classList.remove('hidden');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            return false;
+        } else {
+            dateError.classList.add('hidden');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    }
+    return true;
+}
+
+function validateDateAndSubmit() {
+    if (validateDate()) {
+        // Soumettre le formulaire pour générer les heures disponibles
+        document.getElementById('rendezvousForm').submit();
+    }
+}
+
+// Validation lors de la soumission du formulaire
+document.getElementById('rendezvousForm').addEventListener('submit', function(e) {
+    // Ne pas empêcher la soumission si c'est pour générer les heures
+    const submitBtn = e.submitter;
+    if (submitBtn && submitBtn.name === 'valider') {
+        if (!validateDate()) {
+            e.preventDefault();
+            return false;
+        }
+        
+        const dateInput = document.getElementById('date_rdv');
+        const heureInput = document.getElementById('heure_rdv');
+        
+        if (dateInput.value && heureInput.value) {
+            const selectedDate = new Date(dateInput.value + 'T' + heureInput.value);
+            const now = new Date();
+            
+            if (selectedDate <= now) {
+                e.preventDefault();
+                alert("Impossible de prendre un rendez-vous pour une date et heure antérieure à maintenant.");
+                return false;
+            }
+        }
+    }
+});
+
+// Validation en temps réel
+document.getElementById('date_rdv').addEventListener('change', validateDate);
+</script>
+{% endblock %} 

@@ -1,0 +1,110 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto" style="background-color: #F9FAFB;">
+  <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 bg-[#2563EB] rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+      </div>
+      <h2 class="text-3xl font-bold text-[#374151] mb-2">Modifier le rendez-vous</h2>
+      <p class="text-[#6B7280]">Modifiez les détails du rendez-vous #{{ rendezvous.id }}</p>
+    </div>
+    
+    {% if error %}
+      <div class="mb-6 p-4 bg-red-100 border border-red-200 rounded-xl text-red-700 text-center font-medium">
+        <div class="flex items-center justify-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {{ error }}
+        </div>
+      </div>
+    {% endif %}
+    
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      <div class="mb-4">
+        <label for="patient" class="block text-[#374151] font-medium mb-1">Patient</label>
+        <select name="patient" id="patient" required class="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]">
+          <option value="">-- Choisir un patient --</option>
+          {% for patient in patients %}
+            <option value="{{ patient.id }}" {% if selected_patient and patient.id == selected_patient.id %}selected{% endif %}>{{ patient.user.get_full_name }} ({{ patient.telephone }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      
+      <div class="mb-4">
+        <label for="medecin" class="block text-[#374151] font-medium mb-1">Médecin</label>
+        <select name="medecin" id="medecin" required class="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]" onchange="this.form.submit()">
+          <option value="">-- Choisir un médecin --</option>
+          {% for medecin in medecins %}
+            <option value="{{ medecin.id }}" {% if selected_medecin and medecin.id == selected_medecin.id %}selected{% endif %}>Dr. {{ medecin.nom }} ({{ medecin.specialite }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      
+      {% if selected_medecin %}
+      <div class="mb-4">
+        <label for="date_rdv" class="block text-[#374151] font-medium mb-1">Date souhaitée</label>
+        <input type="date" name="date_rdv" id="date_rdv" required 
+               class="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+               min="{{ min_date }}" value="{{ selected_date }}" onchange="this.form.submit()">
+        <p class="text-sm text-[#6B7280] mt-1">Choisissez la date du rendez-vous</p>
+      </div>
+      {% endif %}
+      
+      {% if heures_disponibles %}
+      <div class="mb-4">
+        <label for="heure_rdv" class="block text-[#374151] font-medium mb-1">Heure disponible</label>
+        <select name="heure_rdv" id="heure_rdv" required class="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]">
+          <option value="">-- Choisir une heure --</option>
+          {% for heure in heures_disponibles %}
+            <option value="{{ heure }}" {% if selected_heure == heure %}selected{% endif %}>{{ heure }}</option>
+          {% endfor %}
+        </select>
+        <p class="text-sm text-[#6B7280] mt-1">Heures disponibles pour le {{ selected_date|date:"d/m/Y" }}</p>
+      </div>
+      {% elif selected_medecin and selected_date %}
+      <div class="p-3 bg-[#F9FAFB] text-[#6B7280] rounded text-center">
+        Aucun créneau disponible pour cette date. Veuillez choisir une autre date.
+      </div>
+      {% endif %}
+      
+      <div class="mb-4">
+        <label for="motif" class="block text-[#374151] font-medium mb-1">Motif</label>
+        <input type="text" name="motif" id="motif" required class="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]" value="{{ rendezvous.motif }}" placeholder="Ex: Consultation de routine">
+      </div>
+      
+      <div class="mb-4">
+        <label class="block text-[#374151] font-medium mb-1">Dossier médical</label>
+        <div class="p-4 bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl">
+          <p class="text-sm text-[#6B7280]">Sélectionnez d'abord un patient pour voir son dossier médical</p>
+          {% if selected_patient %}
+            <a href="{% url 'medecin_patient_dossier' selected_patient.id %}" class="text-[#2563EB] hover:text-blue-800 underline mt-2 inline-block font-medium">
+              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              Voir le dossier médical
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      
+      {% if heures_disponibles %}
+      <button type="submit" name="valider" class="w-full bg-[#2563EB] hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg shadow transition-all duration-200 transform hover:scale-105">
+        Enregistrer les modifications
+      </button>
+      {% endif %}
+    </form>
+    
+    <div class="mt-8 pt-6 border-t border-[#E5E7EB] text-center">
+      <a href="{% url 'admin_rendezvous' %}" class="text-[#6B7280] hover:text-[#374151] font-medium transition-colors duration-200">
+        ← Retour à la liste des rendez-vous
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %} 

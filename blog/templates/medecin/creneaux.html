@@ -1,0 +1,163 @@
+{% extends 'base_medecin.html' %}
+{% block content %}
+  <div class="max-w-6xl mx-auto space-y-8" style="background-color: #F9FAFB;">
+    <!-- En-tête -->
+    <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-[#374151]">Mes Créneaux</h1>
+                <p class="text-[#6B7280] mt-2">Gestion de vos créneaux horaires disponibles</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-[#6B7280]">Total</p>
+                <p class="text-2xl font-bold text-[#2563EB]">{{ creneaux|length }} créneaux</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-[#374151]">Gérer mes créneaux</h2>
+            <a href="{% url 'medecin_creneau_create' %}" class="inline-flex items-center px-4 py-2 bg-[#2563EB] hover:bg-[#3B82F6] text-white font-semibold rounded-lg shadow transition">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Ajouter un créneau
+            </a>
+        </div>
+
+        <!-- Filtres -->
+        <div class="flex space-x-2 mb-6">
+            <button id="filter-all" class="px-3 py-1 text-sm font-medium text-[#2563EB] bg-[#E5E7EB] rounded-lg hover:bg-[#2563EB] hover:text-white transition-colors">Tous les jours</button>
+            <button id="filter-lundi" class="px-3 py-1 text-sm font-medium text-[#6B7280] bg-white border border-[#E5E7EB] rounded-lg hover:bg-[#2563EB] hover:text-white transition-colors">Lundi</button>
+            <button id="filter-mardi" class="px-3 py-1 text-sm font-medium text-[#6B7280] bg-white border border-[#E5E7EB] rounded-lg hover:bg-[#2563EB] hover:text-white transition-colors">Mardi</button>
+            <button id="filter-mercredi" class="px-3 py-1 text-sm font-medium text-[#6B7280] bg-white border border-[#E5E7EB] rounded-lg hover:bg-[#2563EB] hover:text-white transition-colors">Mercredi</button>
+            <button id="filter-jeudi" class="px-3 py-1 text-sm font-medium text-[#6B7280] bg-white border border-[#E5E7EB] rounded-lg hover:bg-[#2563EB] hover:text-white transition-colors">Jeudi</button>
+            <button id="filter-vendredi" class="px-3 py-1 text-sm font-medium text-[#6B7280] bg-white border border-[#E5E7EB] rounded-lg hover:bg-[#2563EB] hover:text-white transition-colors">Vendredi</button>
+            <button id="filter-samedi" class="px-3 py-1 text-sm font-medium text-[#6B7280] bg-white border border-[#E5E7EB] rounded-lg hover:bg-[#2563EB] hover:text-white transition-colors">Samedi</button>
+        </div>
+
+        <!-- Liste des créneaux en cartes -->
+        {% if creneaux %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="creneaux-grid">
+            {% for creneau in creneaux %}
+                <div class="creneau-card bg-white border border-[#E5E7EB] rounded-xl p-6 hover:shadow-lg transition-all duration-200 hover:border-[#2563EB]" data-jour="{{ creneau.jour }}">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-[#2563EB] rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-[#374151]">{{ creneau.get_jour_display }}</h3>
+                                <p class="text-sm text-[#6B7280]">Créneau horaire</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <a href="{% url 'medecin_creneau_update' creneau.id %}" class="p-2 text-[#6B7280] hover:text-[#2563EB] hover:bg-[#E5E7EB] rounded-lg transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                            </a>
+                            <a href="{% url 'medecin_creneau_delete' creneau.id %}" class="p-2 text-[#6B7280] hover:text-[#EF4444] hover:bg-red-50 rounded-lg transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-[#6B7280]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-sm text-[#374151]">Début: {{ creneau.heure_debut|time:"H:i" }}</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-[#6B7280]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-sm text-[#374151]">Fin: {{ creneau.heure_fin|time:"H:i" }}</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-[#6B7280]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-sm text-[#374151]">Durée: {{ creneau.heure_debut|time:"H:i" }} - {{ creneau.heure_fin|time:"H:i" }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-[#E5E7EB]">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-[#6B7280]">Statut</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-[#10B981] text-white">
+                                Disponible
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <div class="w-16 h-16 bg-[#2563EB] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-[#374151] mb-2">Aucun créneau</h3>
+                <p class="text-[#6B7280] mb-4">Vous n'avez pas encore de créneaux horaires définis.</p>
+                <a href="{% url 'medecin_creneau_create' %}" class="inline-flex items-center px-4 py-2 bg-[#2563EB] hover:bg-[#3B82F6] text-white font-semibold rounded-lg shadow transition">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Créer votre premier créneau
+                </a>
+      </div>
+        {% endif %}
+    </div>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const creneauCards = document.querySelectorAll('.creneau-card');
+    const filterButtons = document.querySelectorAll('[id^="filter-"]');
+
+    // Filtres par jour
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Retirer la classe active de tous les boutons
+            filterButtons.forEach(btn => {
+                btn.classList.remove('text-[#2563EB]', 'bg-[#E5E7EB]');
+                btn.classList.add('text-[#6B7280]', 'bg-white', 'border', 'border-[#E5E7EB]');
+            });
+            
+            // Ajouter la classe active au bouton cliqué
+            this.classList.remove('text-[#6B7280]', 'bg-white', 'border', 'border-[#E5E7EB]');
+            this.classList.add('text-[#2563EB]', 'bg-[#E5E7EB]');
+            
+            const filterValue = this.id.replace('filter-', '');
+            
+            // Filtrer les créneaux
+            creneauCards.forEach(card => {
+                if (filterValue === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    const cardJour = card.getAttribute('data-jour');
+                    if (cardJour === filterValue) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %} 

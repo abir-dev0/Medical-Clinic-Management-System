@@ -1,0 +1,98 @@
+{% extends 'base_patient.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto" style="background-color: #F9FAFB;">
+  <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8 card-hover">
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 bg-[#2563EB] rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+      </div>
+      <h2 class="text-3xl font-bold text-[#374151] mb-2">Modifier mon rendez-vous</h2>
+      <p class="text-[#6B7280]">Modifiez les détails de votre rendez-vous</p>
+    </div>
+    
+    {% if error %}
+      <div class="mb-6 p-4 bg-red-100 border border-red-200 rounded-xl text-red-700 text-center font-medium">
+        <div class="flex items-center justify-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {{ error }}
+        </div>
+      </div>
+    {% endif %}
+    
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      
+      <div class="space-y-2">
+        <label for="medecin" class="block text-[#374151] font-semibold text-sm uppercase tracking-wide">Médecin</label>
+        <select name="medecin" id="medecin" required class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all duration-200" onchange="this.form.submit()">
+          <option value="">-- Choisir un médecin --</option>
+          {% for medecin in medecins %}
+            <option value="{{ medecin.id }}" {% if selected_medecin and medecin.id == selected_medecin.id %}selected{% endif %}>Dr. {{ medecin.nom }} ({{ medecin.specialite }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      
+      {% if selected_medecin %}
+      <div class="space-y-2">
+        <label for="date_rdv" class="block text-[#374151] font-semibold text-sm uppercase tracking-wide">Date souhaitée</label>
+        <input type="date" name="date_rdv" id="date_rdv" required 
+               class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all duration-200"
+               min="{{ min_date }}" value="{{ selected_date }}" onchange="this.form.submit()">
+        <p class="text-sm text-[#6B7280]">Choisissez la date du rendez-vous</p>
+      </div>
+      {% endif %}
+      
+      {% if heures_disponibles %}
+      <div class="space-y-2">
+        <label for="heure_rdv" class="block text-[#374151] font-semibold text-sm uppercase tracking-wide">Heure disponible</label>
+        <select name="heure_rdv" id="heure_rdv" required class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all duration-200">
+          <option value="">-- Choisir une heure --</option>
+          {% for heure in heures_disponibles %}
+            <option value="{{ heure }}" {% if selected_heure == heure %}selected{% endif %}>{{ heure }}</option>
+          {% endfor %}
+        </select>
+        <p class="text-sm text-[#6B7280]">Heures disponibles pour le {{ selected_date|date:"d/m/Y" }}</p>
+      </div>
+      {% elif selected_medecin and selected_date %}
+      <div class="p-4 bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl text-[#6B7280] text-center">
+        <div class="flex items-center justify-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Aucun créneau disponible pour cette date. Veuillez choisir une autre date.
+        </div>
+      </div>
+      {% endif %}
+      
+      <div class="space-y-2">
+        <label for="motif" class="block text-[#374151] font-semibold text-sm uppercase tracking-wide">Motif</label>
+        <input type="text" name="motif" id="motif" required class="w-full px-4 py-3 border border-[#E5E7EB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all duration-200" value="{{ rendezvous.motif }}" placeholder="Ex: Consultation de routine">
+      </div>
+      
+      {% if heures_disponibles %}
+      <div class="pt-6">
+        <button type="submit" name="valider" class="w-full bg-[#2563EB] hover:bg-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+          <div class="flex items-center justify-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            Enregistrer les modifications
+          </div>
+        </button>
+      </div>
+      {% endif %}
+    </form>
+    
+    <div class="mt-8 pt-6 border-t border-[#E5E7EB] text-center">
+      <a href="{% url 'patient_rendezvous' %}" class="text-[#2563EB] hover:text-[#3B82F6] font-medium transition-colors duration-200">
+        ← Retour à mes rendez-vous
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,184 @@
+{% extends 'base_patient.html' %}
+
+{% block content %}
+<div class="space-y-8" style="background-color: #F9FAFB;">
+  <!-- En-tête -->
+  <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-3xl font-bold text-[#374151] mb-2">Mes rendez-vous</h2>
+        <p class="text-[#6B7280] text-lg">Retrouvez ici la liste de vos rendez-vous à venir et passés.</p>
+      </div>
+      <a href="{% url 'prendre_rendezvous' %}" class="inline-flex items-center px-6 py-3 bg-[#2563EB] hover:bg-[#3B82F6] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        Prendre un RDV
+      </a>
+    </div>
+  </div>
+
+  <!-- Liste des rendez-vous -->
+  <div class="grid gap-6">
+    {% for rdv in rendezvous %}
+      <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-6 card-hover">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-6">
+            <div class="flex-shrink-0">
+              <div class="w-16 h-16 bg-[#2563EB] rounded-2xl flex items-center justify-center">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-[#374151] mb-1">Rendez-vous avec Dr. {{ rdv.medecin.nom }}</h3>
+              <div class="flex items-center space-x-6 text-[#6B7280]">
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span class="font-medium">{{ rdv.date_heure|date:"d/m/Y" }}</span>
+                </div>
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span class="font-medium">{{ rdv.date_heure|date:"H:i" }}</span>
+                </div>
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0-1.104.896-2 2-2s2 .896 2 2-.896 2-2 2-2-.896-2-2z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2" />
+                  </svg>
+                  <span class="font-medium">{{ rdv.medecin.specialite.nom }}</span>
+                </div>
+                {% if rdv.motif %}
+                <div class="flex items-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span class="font-medium">{{ rdv.motif }}</span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="text-right mr-4">
+              {% if rdv.statut == 'confirmé' %}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#10B981] text-white">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  Confirmé
+                </span>
+              {% elif rdv.statut == 'en attente' %}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#3B82F6] text-white">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  En attente
+                </span>
+              {% else %}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#EF4444] text-white">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Annulé
+                </span>
+              {% endif %}
+            </div>
+            <div class="flex space-x-2">
+              {% if rdv.statut != 'annulé' and rdv.date_heure|date:"Y-m-d" > today|date:"Y-m-d" %}
+                <a href="{% url 'patient_rendezvous_update' rdv.id %}" class="inline-flex items-center px-4 py-2 bg-[#2563EB] hover:bg-[#3B82F6] text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-105">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Modifier
+                </a>
+                <a href="{% url 'patient_rendezvous_delete' rdv.id %}" class="inline-flex items-center px-4 py-2 bg-[#EF4444] hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-105">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Annuler
+                </a>
+                <a href="{% url 'patient_compte_rendu_detail' rdv.id %}" class="inline-flex items-center px-4 py-2 bg-[#10B981] hover:bg-green-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-105">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  Voir détails
+                </a>
+              {% elif rdv.statut != 'annulé' and rdv.date_heure <= now %}
+                <span class="text-sm text-[#6B7280] italic px-4 py-2">
+                  Rendez-vous passé
+                </span>
+                <a href="{% url 'patient_compte_rendu_detail' rdv.id %}" class="inline-flex items-center px-4 py-2 bg-[#10B981] hover:bg-green-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-105">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  Voir détails
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] p-12 text-center">
+        <div class="w-24 h-24 bg-[#2563EB] rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-[#374151] mb-2">Aucun rendez-vous</h3>
+        <p class="text-[#6B7280] mb-6">Vous n'avez pas encore de rendez-vous programmé.</p>
+        <a href="{% url 'prendre_rendezvous' %}" class="inline-flex items-center px-6 py-3 bg-[#10B981] hover:bg-green-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Prendre mon premier rendez-vous
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+// Script simple pour la recherche et le filtrage
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search');
+    const statusSelect = document.getElementById('status');
+    const dateInput = document.getElementById('date');
+    const cardElements = document.querySelectorAll('.card-hover');
+
+    function filterCards() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusFilter = statusSelect.value;
+        const dateFilter = dateInput.value;
+
+        cardElements.forEach(card => {
+            const patientName = card.querySelector('h3').textContent.toLowerCase();
+            const status = card.querySelector('span').textContent.toLowerCase();
+            const date = card.querySelector('span.font-medium').textContent;
+
+            const matchesSearch = patientName.includes(searchTerm);
+            const matchesStatus = !statusFilter || status.includes(statusFilter);
+            const matchesDate = !dateFilter || date.includes(dateFilter);
+
+            if (matchesSearch && matchesStatus && matchesDate) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    if (searchInput) searchInput.addEventListener('input', filterCards);
+    if (statusSelect) statusSelect.addEventListener('change', filterCards);
+    if (dateInput) dateInput.addEventListener('change', filterCards);
+});
+</script>
+{% endblock %} 
